@@ -1,0 +1,58 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Copyright (c) 2026 LSP0123
+ *
+ * LX-R58CH V10 board device tree for U-Boot (Radxa vendor tree).
+ * Ported from the board's production 5.10 BSP device tree: the debug
+ * console is UART2 on the M2 pins (GPIO3_B1/B2) at 1500000 baud, the
+ * same routing the shipped firmware uses for its fiq-debugger console.
+ */
+
+/dts-v1/;
+#include "rk3588.dtsi"
+#include "rk3588-u-boot.dtsi"
+
+/ {
+	model = "LX-R58CH V10";
+	compatible = "rockchip,lz-rk3588-r58ch", "rockchip,rk3588";
+
+	vcc12v_dcin: vcc12v-dcin {
+		u-boot,dm-pre-reloc;
+		compatible = "regulator-fixed";
+		regulator-name = "vcc12v_dcin";
+		regulator-always-on;
+		regulator-boot-on;
+		regulator-min-microvolt = <12000000>;
+		regulator-max-microvolt = <12000000>;
+	};
+
+	vcc5v0_sys: vcc5v0-sys {
+		u-boot,dm-pre-reloc;
+		compatible = "regulator-fixed";
+		regulator-name = "vcc5v0_sys";
+		regulator-always-on;
+		regulator-boot-on;
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+		vin-supply = <&vcc12v_dcin>;
+	};
+};
+
+/*
+ * Debug console: UART2 on the M2 pins (GPIO3_B1/B2), matching the production
+ * firmware routing. Set the pinmux explicitly so U-Boot output always lands
+ * on the board's serial header.
+ */
+&uart2 {
+	u-boot,dm-spl;
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart2m2_xfer>;
+	status = "okay";
+};
+
+/*
+ * Note: this board has no PCIe hardware. The Rock 5B reference DTS enables
+ * pcie3x4 + pcie30phy (and toggles GPIO1_A4 / GPIO4_B6 for PCIe power/reset,
+ * which are the eDP panel power and backlight-enable pins here); they are
+ * deliberately left disabled.
+ */
