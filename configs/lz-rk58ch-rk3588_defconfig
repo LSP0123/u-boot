@@ -215,6 +215,9 @@ CONFIG_AVB_LIBAVB_ATX=y
 CONFIG_AVB_LIBAVB_USER=y
 CONFIG_RK_AVB_LIBAVB_USER=y
 
+
+CONFIG_CMD_ROCKUSB=y
+
 # Persistent U-Boot environment on eMMC (saveenv support).
 # The Android-flavoured reference configs default to nowhere (misc/BCB
 # flow), so plain saveenv prints "Saving Environment to nowhere...".

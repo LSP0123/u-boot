@@ -36,6 +36,39 @@
 		regulator-max-microvolt = <5000000>;
 		vin-supply = <&vcc12v_dcin>;
 	};
+
+	/*
+	 * Physical recovery/download switch, wired to SARADC channel 1
+	 * (same channel as the volume keys on the production 5.10 BSP).
+	 * The "loader" position pulls the pin near ground (~17 mV), which
+	 * vendor U-Boot's setup_download_mode() reads via the adc-keys
+	 * volume-up entry (KEY_VOLUMEUP) to enter rockusb/maskrom download
+	 * mode. Without this node the key class never registers and the
+	 * switch is dead.
+	 */
+	adc-keys {
+		u-boot,dm-pre-reloc;
+		compatible = "adc-keys";
+		io-channels = <&saradc 1>;
+		io-channel-names = "buttons";
+		keyup-threshold-microvolt = <1800000>;
+		poll-interval = <100>;
+		status = "okay";
+
+		vol-up-key {
+			u-boot,dm-pre-reloc;
+			label = "volume up";
+			linux,code = <115>; /* KEY_VOLUMEUP */
+			press-threshold-microvolt = <17000>;
+		};
+
+		vol-down-key {
+			u-boot,dm-pre-reloc;
+			label = "volume down";
+			linux,code = <114>; /* KEY_VOLUMEDOWN */
+			press-threshold-microvolt = <417000>;
+		};
+	};
 };
 
 /*
